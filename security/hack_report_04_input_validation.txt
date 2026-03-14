@@ -1,0 +1,5 @@
+INPUT VALIDATION HACK REPORT
+============================================================
+
+Total issues found: 0
+

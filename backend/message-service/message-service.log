@@ -10,4 +10,23 @@
 [GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
 Please check https://github.com/gin-gonic/gin/blob/master/docs/doc.md#dont-trust-all-proxies for details.
 [GIN-debug] Listening and serving HTTP on :8083
-[GIN-debug] [ERROR] listen tcp :8083: bind: address already in use
+[GIN] 2026/03/14 - 21:16:50 | 404 | 794.744µs |       127.0.0.1 | GET      "/messages"
+[GIN] 2026/03/14 - 21:16:50 | 404 |  2.435µs |       127.0.0.1 | GET      "/messages/1"
+[GIN] 2026/03/14 - 21:16:50 | 404 |  9.145µs |       127.0.0.1 | GET      "/groups/1/messages"
+[GIN] 2026/03/14 - 21:16:50 | 404 |   3.28µs |       127.0.0.1 | GET      "/groups/999/messages"
+[GIN] 2026/03/14 - 21:18:26 | 404 |  2.725µs |       127.0.0.1 | GET      "/messages"
+[GIN] 2026/03/14 - 21:18:26 | 404 |  1.203µs |       127.0.0.1 | GET      "/messages/1"
+[GIN] 2026/03/14 - 21:18:26 | 404 |  1.106µs |       127.0.0.1 | GET      "/groups/1/messages"
+[GIN] 2026/03/14 - 21:18:26 | 404 |  1.253µs |       127.0.0.1 | GET      "/groups/999/messages"
+[GIN] 2026/03/14 - 21:18:53 | 404 | 11.142µs |       127.0.0.1 | GET      "/messages"
+[GIN] 2026/03/14 - 21:18:53 | 404 |  4.295µs |       127.0.0.1 | GET      "/messages/1"
+[GIN] 2026/03/14 - 21:18:53 | 404 |  3.904µs |       127.0.0.1 | GET      "/groups/1/messages"
+[GIN] 2026/03/14 - 21:18:53 | 404 |  3.839µs |       127.0.0.1 | GET      "/groups/999/messages"
+[GIN] 2026/03/14 - 21:46:27 | 404 |  3.734µs |       127.0.0.1 | GET      "/messages"
+[GIN] 2026/03/14 - 21:46:27 | 404 |  1.313µs |       127.0.0.1 | GET      "/messages/1"
+[GIN] 2026/03/14 - 21:46:27 | 404 |  1.998µs |       127.0.0.1 | GET      "/groups/1/messages"
+[GIN] 2026/03/14 - 21:46:27 | 404 |  1.856µs |       127.0.0.1 | GET      "/groups/999/messages"
+[GIN] 2026/03/14 - 21:46:33 | 404 |  4.807µs |       127.0.0.1 | GET      "/messages"
+[GIN] 2026/03/14 - 21:46:33 | 404 |  2.036µs |       127.0.0.1 | GET      "/messages/1"
+[GIN] 2026/03/14 - 21:46:33 | 404 |  2.097µs |       127.0.0.1 | GET      "/groups/1/messages"
+[GIN] 2026/03/14 - 21:46:33 | 404 |  2.306µs |       127.0.0.1 | GET      "/groups/999/messages"

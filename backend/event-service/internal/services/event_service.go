@@ -43,9 +43,34 @@ type UpdateEventInput struct {
 }
 
 func (s *EventService) CreateEvent(input CreateEventInput) (*models.Event, error) {
+	if input.Latitude < -90 || input.Latitude > 90 {
+		return nil, errors.New("latitude must be between -90 and 90")
+	}
+
+	// Validate longitude range (-180 to 180)
+	if input.Longitude < -180 || input.Longitude > 180 {
+		return nil, errors.New("longitude must be between -180 and 180")
+	}
+
+	// Parse and validate date
 	eventDate, err := time.Parse(time.RFC3339, input.EventDate)
 	if err != nil {
-		return nil, errors.New("invalid date format, expected ISO 8601")
+		return nil, errors.New("invalid date format, expected ISO 8601 (e.g., 2026-12-31T23:59:59Z)")
+	}
+
+	// Validate that event date is in the future
+	if eventDate.Before(time.Now()) {
+		return nil, errors.New("event date must be in the future")
+	}
+
+	// Validate price for non-free events
+	if !input.IsFree && input.Price < 0 {
+		return nil, errors.New("price must be non-negative for paid events")
+	}
+
+	// Validate max attendees
+	if input.MaxAttendees < 0 {
+		return nil, errors.New("max attendees must be non-negative")
 	}
 
 	event := &models.Event{
@@ -70,16 +95,28 @@ func (s *EventService) CreateEvent(input CreateEventInput) (*models.Event, error
 }
 
 func (s *EventService) GetEventByID(id uint) (*models.Event, error) {
+	// Validate ID
+	if id == 0 {
+		return nil, errors.New("invalid event ID")
+	}
 	return s.eventRepo.FindByID(id)
 }
 
 func (s *EventService) UpdateEvent(id uint, input UpdateEventInput) (*models.Event, error) {
+	// Validate ID
+	if id == 0 {
+		return nil, errors.New("invalid event ID")
+	}
+
 	event, err := s.eventRepo.FindByID(id)
 	if err != nil {
 		return nil, err
 	}
 
 	if input.Title != nil {
+		if *input.Title == "" {
+			return nil, errors.New("title cannot be empty")
+		}
 		event.Title = *input.Title
 	}
 	if input.Description != nil {
@@ -93,9 +130,15 @@ func (s *EventService) UpdateEvent(id uint, input UpdateEventInput) (*models.Eve
 		event.EventDate = eventDate
 	}
 	if input.Latitude != nil {
+		if *input.Latitude < -90 || *input.Latitude > 90 {
+			return nil, errors.New("latitude must be between -90 and 90")
+		}
 		event.Latitude = *input.Latitude
 	}
 	if input.Longitude != nil {
+		if *input.Longitude < -180 || *input.Longitude > 180 {
+			return nil, errors.New("longitude must be between -180 and 180")
+		}
 		event.Longitude = *input.Longitude
 	}
 	if input.Address != nil {
@@ -105,12 +148,18 @@ func (s *EventService) UpdateEvent(id uint, input UpdateEventInput) (*models.Eve
 		event.IsFree = *input.IsFree
 	}
 	if input.Price != nil {
+		if *input.Price < 0 {
+			return nil, errors.New("price must be non-negative")
+		}
 		event.Price = *input.Price
 	}
 	if input.Category != nil {
 		event.Category = *input.Category
 	}
 	if input.MaxAttendees != nil {
+		if *input.MaxAttendees < 0 {
+			return nil, errors.New("max attendees must be non-negative")
+		}
 		event.MaxAttendees = *input.MaxAttendees
 	}
 
@@ -122,22 +171,58 @@ func (s *EventService) UpdateEvent(id uint, input UpdateEventInput) (*models.Eve
 }
 
 func (s *EventService) DeleteEvent(id uint) error {
+	// Validate ID
+	if id == 0 {
+		return errors.New("invalid event ID")
+	}
 	return s.eventRepo.Delete(id)
 }
 
 func (s *EventService) GetEventsByLocation(latitude, longitude float64, radiusKm float64, limit int) ([]models.Event, error) {
+	// Validate latitude range
+	if latitude < -90 || latitude > 90 {
+		return nil, errors.New("latitude must be between -90 and 90")
+	}
+
+	// Validate longitude range
+	if longitude < -180 || longitude > 180 {
+		return nil, errors.New("longitude must be between -180 and 180")
+	}
+
+	// Validate radius
+	if radiusKm < 0 {
+		radiusKm = 10 // default
+	}
+
+	// Validate limit
+	if limit < 0 {
+		limit = 20 // default
+	}
+
 	return s.eventRepo.GetEventsByLocation(latitude, longitude, radiusKm, limit)
 }
 
 func (s *EventService) GetUpcomingEvents(limit int) ([]models.Event, error) {
+	// Validate limit
+	if limit < 0 {
+		limit = 10 // default
+	}
 	return s.eventRepo.GetUpcomingEvents(limit)
 }
 
 func (s *EventService) RegisterForEvent(userID uint, eventID uint) error {
+	// Validate IDs
+	if userID == 0 {
+		return errors.New("invalid user ID")
+	}
+	if eventID == 0 {
+		return errors.New("invalid event ID")
+	}
+
 	// Check if event exists
 	_, err := s.eventRepo.FindByID(eventID)
 	if err != nil {
-		return err
+		return errors.New("event not found")
 	}
 
 	// Check if user is already registered
@@ -163,6 +248,14 @@ func (s *EventService) RegisterForEvent(userID uint, eventID uint) error {
 }
 
 func (s *EventService) UnregisterFromEvent(userID uint, eventID uint) error {
+	// Validate IDs
+	if userID == 0 {
+		return errors.New("invalid user ID")
+	}
+	if eventID == 0 {
+		return errors.New("invalid event ID")
+	}
+
 	attendees, err := s.eventRepo.GetEventAttendees(eventID)
 	if err != nil {
 		return err
@@ -178,9 +271,23 @@ func (s *EventService) UnregisterFromEvent(userID uint, eventID uint) error {
 }
 
 func (s *EventService) GetEventAttendees(eventID uint) ([]models.EventAttendee, error) {
+	// Validate ID
+	if eventID == 0 {
+		return nil, errors.New("invalid event ID")
+	}
 	return s.eventRepo.GetEventAttendees(eventID)
 }
 
 func (s *EventService) GetUserEvents(userID uint, limit int) ([]models.Event, error) {
+	// Validate ID
+	if userID == 0 {
+		return nil, errors.New("invalid user ID")
+	}
+
+	// Validate limit
+	if limit < 0 {
+		limit = 10 // default
+	}
+
 	return s.eventRepo.GetUserEvents(userID)
 }

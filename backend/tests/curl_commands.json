@@ -1,0 +1,806 @@
+{
+  "description": "Comprehensive curl tests for user-service, event-service, and message-service",
+  "base_urls": {
+    "user_service": "http://localhost:8081",
+    "event_service": "http://localhost:8082",
+    "message_service": "http://localhost:8083"
+  },
+  "user_service_tests": [
+    {
+      "name": "Register user - valid request",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email\":\"test1@example.com\",\"username\":\"testuser1\",\"password\":\"password123\",\"first_name\":\"John\",\"last_name\":\"Doe\",\"age\":25,\"is_organizer\":false}'"
+    },
+    {
+      "name": "Register user - missing email",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"username\":\"testuser2\",\"password\":\"password123\",\"first_name\":\"Jane\",\"last_name\":\"Smith\",\"age\":25}'"
+    },
+    {
+      "name": "Register user - missing username",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email\":\"test2@example.com\",\"password\":\"password123\",\"first_name\":\"Jane\",\"last_name\":\"Smith\",\"age\":25}'"
+    },
+    {
+      "name": "Register user - missing password",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email\":\"test3@example.com\",\"username\":\"testuser3\",\"first_name\":\"Jane\",\"last_name\":\"Smith\",\"age\":25}'"
+    },
+    {
+      "name": "Register user - missing first_name",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email\":\"test4@example.com\",\"username\":\"testuser4\",\"password\":\"password123\",\"last_name\":\"Smith\",\"age\":25}'"
+    },
+    {
+      "name": "Register user - missing last_name",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email\":\"test5@example.com\",\"username\":\"testuser5\",\"password\":\"password123\",\"first_name\":\"Jane\",\"age\":25}'"
+    },
+    {
+      "name": "Register user - missing age",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email\":\"test6@example.com\",\"username\":\"testuser6\",\"password\":\"password123\",\"first_name\":\"Jane\",\"last_name\":\"Smith\"}'"
+    },
+    {
+      "name": "Register user - underage (age 17)",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email\":\"young@example.com\",\"username\":\"younguser\",\"password\":\"password123\",\"first_name\":\"Young\",\"last_name\":\"User\",\"age\":17}'"
+    },
+    {
+      "name": "Register user - age 18 (valid)",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email\":\"just18@example.com\",\"username\":\"just18user\",\"password\":\"password123\",\"first_name\":\"Alice\",\"last_name\":\"Doe\",\"age\":18}'"
+    },
+    {
+      "name": "Register user - short password (<6 chars)",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email\":\"short@example.com\",\"username\":\"shortpwd\",\"password\":\"123\",\"first_name\":\"Short\",\"last_name\":\"Password\",\"age\":25}'"
+    },
+    {
+      "name": "Register user - invalid email format",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email\":\"notanemail\",\"username\":\"invaliduser\",\"password\":\"password123\",\"first_name\":\"Invalid\",\"last_name\":\"Email\",\"age\":25}'"
+    },
+    {
+      "name": "Register user - duplicate email",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email\":\"test1@example.com\",\"username\":\"newusername\",\"password\":\"password123\",\"first_name\":\"Duplicate\",\"last_name\":\"Email\",\"age\":25}'"
+    },
+    {
+      "name": "Register user - duplicate username",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email\":\"newemail@example.com\",\"username\":\"testuser1\",\"password\":\"password123\",\"first_name\":\"Duplicate\",\"last_name\":\"Username\",\"age\":25}'"
+    },
+    {
+      "name": "Register user - empty JSON",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{}'"
+    },
+    {
+      "name": "Register user - invalid JSON",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email:\"invalid\"}'"
+    },
+    {
+      "name": "Register user - non-JSON content",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: text/plain\" -d 'email=test@example.com'"
+    },
+    {
+      "name": "Login - valid credentials",
+      "curl": "curl -X POST http://localhost:8081/login -H \"Content-Type: application/json\" -d '{\"email\":\"test1@example.com\",\"password\":\"password123\"}'"
+    },
+    {
+      "name": "Login - wrong password",
+      "curl": "curl -X POST http://localhost:8081/login -H \"Content-Type: application/json\" -d '{\"email\":\"test1@example.com\",\"password\":\"wrongpassword\"}'"
+    },
+    {
+      "name": "Login - non-existent email",
+      "curl": "curl -X POST http://localhost:8081/login -H \"Content-Type: application/json\" -d '{\"email\":\"nonexistent@example.com\",\"password\":\"password123\"}'"
+    },
+    {
+      "name": "Login - missing email",
+      "curl": "curl -X POST http://localhost:8081/login -H \"Content-Type: application/json\" -d '{\"password\":\"password123\"}'"
+    },
+    {
+      "name": "Login - missing password",
+      "curl": "curl -X POST http://localhost:8081/login -H \"Content-Type: application/json\" -d '{\"email\":\"test1@example.com\"}'"
+    },
+    {
+      "name": "Login - empty JSON",
+      "curl": "curl -X POST http://localhost:8081/login -H \"Content-Type: application/json\" -d '{}'"
+    },
+    {
+      "name": "Login - invalid JSON",
+      "curl": "curl -X POST http://localhost:8081/login -H \"Content-Type: application/json\" -d '{\"email:\"invalid\"}'"
+    },
+    {
+      "name": "Login - invalid email format",
+      "curl": "curl -X POST http://localhost:8081/login -H \"Content-Type: application/json\" -d '{\"email\":\"notemail\",\"password\":\"password123\"}'"
+    },
+    {
+      "name": "Get profile - no auth token",
+      "curl": "curl -X GET http://localhost:8081/profile"
+    },
+    {
+      "name": "Get profile - invalid auth token",
+      "curl": "curl -X GET http://localhost:8081/profile -H \"Authorization: Bearer invalidtoken\""
+    },
+    {
+      "name": "Get profile - expired auth token",
+      "curl": "curl -X GET http://localhost:8081/profile -H \"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjF9.invalid\""
+    },
+    {
+      "name": "Update profile - no auth token",
+      "curl": "curl -X PUT http://localhost:8081/profile -H \"Content-Type: application/json\" -d '{\"first_name\":\"Updated\"}'"
+    },
+    {
+      "name": "Update profile - valid request",
+      "curl": "curl -X PUT http://localhost:8081/profile -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"first_name\":\"UpdatedJohn\",\"last_name\":\"UpdatedDoe\",\"bio\":\"Updated bio\"}'"
+    },
+    {
+      "name": "Update profile - empty JSON",
+      "curl": "curl -X PUT http://localhost:8081/profile -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{}'"
+    },
+    {
+      "name": "Update profile - invalid JSON",
+      "curl": "curl -X PUT http://localhost:8081/profile -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"first_name:\"invalid\"}'"
+    },
+    {
+      "name": "Update avatar - no auth token",
+      "curl": "curl -X PUT http://localhost:8081/profile/avatar -H \"Content-Type: application/json\" -d '{\"avatar_url\":\"http://example.com/avatar.png\"}'"
+    },
+    {
+      "name": "Update avatar - valid request",
+      "curl": "curl -X PUT http://localhost:8081/profile/avatar -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"avatar_url\":\"http://example.com/newavatar.png\"}'"
+    },
+    {
+      "name": "Update avatar - missing avatar_url",
+      "curl": "curl -X PUT http://localhost:8081/profile/avatar -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{}'"
+    },
+    {
+      "name": "Search users - no auth token",
+      "curl": "curl -X GET \"http://localhost:8081/users/search?q=john\""
+    },
+    {
+      "name": "Search users - valid request",
+      "curl": "curl -X GET \"http://localhost:8081/users/search?q=john\" -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Search users - empty query",
+      "curl": "curl -X GET \"http://localhost:8081/users/search?q=\" -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Search users - with limit",
+      "curl": "curl -X GET \"http://localhost:8081/users/search?q=john&limit=5\" -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Search users - invalid limit",
+      "curl": "curl -X GET \"http://localhost:8081/users/search?q=john&limit=abc\" -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Search users - negative limit",
+      "curl": "curl -X GET \"http://localhost:8081/users/search?q=john&limit=-1\" -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Get friend suggestions - no auth token",
+      "curl": "curl -X GET http://localhost:8081/users/suggestions"
+    },
+    {
+      "name": "Get friend suggestions - valid request",
+      "curl": "curl -X GET http://localhost:8081/users/suggestions -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Get friend suggestions - with limit",
+      "curl": "curl -X GET \"http://localhost:8081/users/suggestions?limit=5\" -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Send friend request - no auth token",
+      "curl": "curl -X POST http://localhost:8081/friends/request -H \"Content-Type: application/json\" -d '{\"receiver_id\":2}'"
+    },
+    {
+      "name": "Send friend request - valid request",
+      "curl": "curl -X POST http://localhost:8081/friends/request -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"receiver_id\":2}'"
+    },
+    {
+      "name": "Send friend request - missing receiver_id",
+      "curl": "curl -X POST http://localhost:8081/friends/request -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{}'"
+    },
+    {
+      "name": "Send friend request - invalid receiver_id (0)",
+      "curl": "curl -X POST http://localhost:8081/friends/request -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"receiver_id\":0}'"
+    },
+    {
+      "name": "Send friend request - self-friend request",
+      "curl": "curl -X POST http://localhost:8081/friends/request -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"receiver_id\":1}'"
+    },
+    {
+      "name": "Accept friend request - no auth token",
+      "curl": "curl -X PUT http://localhost:8081/friends/request/1/accept"
+    },
+    {
+      "name": "Accept friend request - valid request",
+      "curl": "curl -X PUT http://localhost:8081/friends/request/1/accept -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Accept friend request - invalid request ID",
+      "curl": "curl -X PUT http://localhost:8081/friends/request/abc/accept -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Reject friend request - no auth token",
+      "curl": "curl -X PUT http://localhost:8081/friends/request/1/reject"
+    },
+    {
+      "name": "Reject friend request - valid request",
+      "curl": "curl -X PUT http://localhost:8081/friends/request/1/reject -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Get friends - no auth token",
+      "curl": "curl -X GET http://localhost:8081/friends"
+    },
+    {
+      "name": "Get friends - valid request",
+      "curl": "curl -X GET http://localhost:8081/friends -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Remove friend - no auth token",
+      "curl": "curl -X DELETE http://localhost:8081/friends/2"
+    },
+    {
+      "name": "Remove friend - valid request",
+      "curl": "curl -X DELETE http://localhost:8081/friends/2 -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Remove friend - invalid friend ID",
+      "curl": "curl -X DELETE http://localhost:8081/friends/abc -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Health check",
+      "curl": "curl -X GET http://localhost:8081/health"
+    },
+    {
+      "name": "Root endpoint",
+      "curl": "curl -X GET http://localhost:8081/"
+    },
+    {
+      "name": "Invalid endpoint",
+      "curl": "curl -X GET http://localhost:8081/invalid"
+    },
+    {
+      "name": "Method not allowed - GET on register",
+      "curl": "curl -X GET http://localhost:8081/register"
+    },
+    {
+      "name": "Method not allowed - DELETE on login",
+      "curl": "curl -X DELETE http://localhost:8081/login"
+    },
+    {
+      "name": "Wrong content type",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/xml\" -d '<user><email>test@example.com</email></user>'"
+    },
+    {
+      "name": "Very long email",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@example.com\",\"username\":\"longemail\",\"password\":\"password123\",\"first_name\":\"Long\",\"last_name\":\"Email\",\"age\":25}'"
+    },
+    {
+      "name": "Unicode in username",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email\":\"unicode@example.com\",\"username\":\"юзер\",\"password\":\"password123\",\"first_name\":\"Unicode\",\"last_name\":\"User\",\"age\":25}'"
+    },
+    {
+      "name": "SQL injection attempt in email",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email\":\"test'\"'\"'@example.com\",\"username\":\"sqluser\",\"password\":\"password123\",\"first_name\":\"SQL\",\"last_name\":\"Injection\",\"age\":25}'"
+    },
+    {
+      "name": "XSS attempt in first_name",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email\":\"xss@example.com\",\"username\":\"xssuser\",\"password\":\"password123\",\"first_name\":\"<script>alert(1)</script>\",\"last_name\":\"XSS\",\"age\":25}'"
+    },
+    {
+      "name": "Special characters in password",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email\":\"special@example.com\",\"username\":\"specialuser\",\"password\":\"p@$$w0rd!#$%\",\"first_name\":\"Special\",\"last_name\":\"Chars\",\"age\":25}'"
+    },
+    {
+      "name": "Login with special chars in password",
+      "curl": "curl -X POST http://localhost:8081/login -H \"Content-Type: application/json\" -d '{\"email\":\"test1@example.com\",\"password\":\"p@$$w0rd!#$%\"}'"
+    },
+    {
+      "name": "Age boundary test - age 0",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email\":\"age0@example.com\",\"username\":\"age0user\",\"password\":\"password123\",\"first_name\":\"Age\",\"last_name\":\"Zero\",\"age\":0}'"
+    },
+    {
+      "name": "Age boundary test - age 200",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email\":\"age200@example.com\",\"username\":\"age200user\",\"password\":\"password123\",\"first_name\":\"Age\",\"last_name\":\"200\",\"age\":200}'"
+    },
+    {
+      "name": "Boolean as string in is_organizer",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email\":\"bool@example.com\",\"username\":\"booluser\",\"password\":\"password123\",\"first_name\":\"Bool\",\"last_name\":\"Test\",\"age\":25,\"is_organizer\":\"true\"}'"
+    },
+    {
+      "name": "Null in required field",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email\":null,\"username\":\"nulluser\",\"password\":\"password123\",\"first_name\":\"Null\",\"last_name\":\"Test\",\"age\":25}'"
+    },
+    {
+      "name": "Array in string field",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email\":[\"test@example.com\"],\"username\":\"arrayuser\",\"password\":\"password123\",\"first_name\":\"Array\",\"last_name\":\"Test\",\"age\":25}'"
+    },
+    {
+      "name": "Number in string field",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email\":123,\"username\":\"numuser\",\"password\":\"password123\",\"first_name\":\"Number\",\"last_name\":\"Test\",\"age\":25}'"
+    },
+    {
+      "name": "Empty body",
+      "curl": "curl -X POST http://localhost:8081/register"
+    },
+    {
+      "name": "Multiple Content-Type headers",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -H \"Content-Type: text/plain\" -d '{\"email\":\"test@example.com\",\"username\":\"testuser\",\"password\":\"password123\",\"first_name\":\"John\",\"last_name\":\"Doe\",\"age\":25}'"
+    },
+    {
+      "name": "Extra fields in request",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email\":\"extra@example.com\",\"username\":\"extrauser\",\"password\":\"password123\",\"first_name\":\"Extra\",\"last_name\":\"Fields\",\"age\":25,\"extra_field\":\"should be ignored\"}'"
+    },
+    {
+      "name": "Deep nested JSON",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email\":\"nested@example.com\",\"username\":\"nesteduser\",\"password\":\"password123\",\"first_name\":{\"name\":\"John\"},\"last_name\":\"Doe\",\"age\":25}'"
+    },
+    {
+      "name": "Very large number in age",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email\":\"large@example.com\",\"username\":\"largeuser\",\"password\":\"password123\",\"first_name\":\"Large\",\"last_name\":\"Age\",\"age\":9999999999}'"
+    },
+    {
+      "name": "Negative age",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email\":\"negative@example.com\",\"username\":\"negativeuser\",\"password\":\"password123\",\"first_name\":\"Negative\",\"last_name\":\"Age\",\"age\":-1}'"
+    },
+    {
+      "name": "Float in age",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email\":\"float@example.com\",\"username\":\"floatuser\",\"password\":\"password123\",\"first_name\":\"Float\",\"last_name\":\"Age\",\"age\":25.5}'"
+    },
+    {
+      "name": "Boolean in age",
+      "curl": "curl -X POST http://localhost:8081/register -H \"Content-Type: application/json\" -d '{\"email\":\"boolage@example.com\",\"username\":\"boolageuser\",\"password\":\"password123\",\"first_name\":\"Bool\",\"last_name\":\"Age\",\"age\":true}'"
+    }
+  ],
+  "event_service_tests": [
+    {
+      "name": "Create event - valid request",
+      "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: application/json\" -d '{\"title\":\"Test Event\",\"description\":\"A test event\",\"event_date\":\"2026-12-31T23:59:59Z\",\"latitude\":55.7558,\"longitude\":37.6173,\"address\":\"Moscow\",\"is_free\":true,\"category\":\"Sports\"}'"
+    },
+    {
+      "name": "Create event - missing title",
+      "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: application/json\" -d '{\"description\":\"A test event\",\"event_date\":\"2026-12-31T23:59:59Z\",\"latitude\":55.7558,\"longitude\":37.6173}'"
+    },
+    {
+      "name": "Create event - missing event_date",
+      "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: application/json\" -d '{\"title\":\"Test Event\",\"latitude\":55.7558,\"longitude\":37.6173}'"
+    },
+    {
+      "name": "Create event - missing latitude",
+      "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: application/json\" -d '{\"title\":\"Test Event\",\"event_date\":\"2026-12-31T23:59:59Z\",\"longitude\":37.6173}'"
+    },
+    {
+      "name": "Create event - missing longitude",
+      "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: application/json\" -d '{\"title\":\"Test Event\",\"event_date\":\"2026-12-31T23:59:59Z\",\"latitude\":55.7558}'"
+    },
+    {
+      "name": "Create event - empty JSON",
+      "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: application/json\" -d '{}'"
+    },
+    {
+      "name": "Create event - invalid JSON",
+      "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: application/json\" -d '{\"title:\"invalid\"}'"
+    },
+    {
+      "name": "Create event - invalid latitude (string)",
+      "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: application/json\" -d '{\"title\":\"Test Event\",\"event_date\":\"2026-12-31T23:59:59Z\",\"latitude\":\"invalid\",\"longitude\":37.6173}'"
+    },
+    {
+      "name": "Create event - invalid longitude (string)",
+      "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: application/json\" -d '{\"title\":\"Test Event\",\"event_date\":\"2026-12-31T23:59:59Z\",\"latitude\":55.7558,\"longitude\":\"invalid\"}'"
+    },
+    {
+      "name": "Create event - out of range latitude (>90)",
+      "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: application/json\" -d '{\"title\":\"Test Event\",\"event_date\":\"2026-12-31T23:59:59Z\",\"latitude\":100,\"longitude\":37.6173}'"
+    },
+    {
+      "name": "Create event - out of range latitude (<-90)",
+      "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: application/json\" -d '{\"title\":\"Test Event\",\"event_date\":\"2026-12-31T23:59:59Z\",\"latitude\":-100,\"longitude\":37.6173}'"
+    },
+    {
+      "name": "Create event - out of range longitude (>180)",
+      "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: application/json\" -d '{\"title\":\"Test Event\",\"event_date\":\"2026-12-31T23:59:59Z\",\"latitude\":55.7558,\"longitude\":200}'"
+    },
+    {
+      "name": "Create event - out of range longitude (<-180)",
+      "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: application/json\" -d '{\"title\":\"Test Event\",\"event_date\":\"2026-12-31T23:59:59Z\",\"latitude\":55.7558,\"longitude\":-200}'"
+    },
+    {
+      "name": "Create event - invalid date format",
+      "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: application/json\" -d '{\"title\":\"Test Event\",\"event_date\":\"not-a-date\",\"latitude\":55.7558,\"longitude\":37.6173}'"
+    },
+    {
+      "name": "Create event - past date",
+      "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: application/json\" -d '{\"title\":\"Test Event\",\"event_date\":\"2020-01-01T00:00:00Z\",\"latitude\":55.7558,\"longitude\":37.6173}'"
+    },
+    {
+      "name": "Create event - negative price with is_free false",
+      "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: application/json\" -d '{\"title\":\"Test Event\",\"event_date\":\"2026-12-31T23:59:59Z\",\"latitude\":55.7558,\"longitude\":37.6173,\"is_free\":false,\"price\":-10}'"
+    },
+    {
+      "name": "Get event - valid ID",
+      "curl": "curl -X GET http://localhost:8082/events/1"
+    },
+    {
+      "name": "Get event - invalid ID (string)",
+      "curl": "curl -X GET http://localhost:8082/events/abc"
+    },
+    {
+      "name": "Get event - non-existent ID",
+      "curl": "curl -X GET http://localhost:8082/events/999999"
+    },
+    {
+      "name": "Get event - negative ID",
+      "curl": "curl -X GET http://localhost:8082/events/-1"
+    },
+    {
+      "name": "Get events nearby - valid params",
+      "curl": "curl -X GET \"http://localhost:8082/events/nearby?latitude=55.7558&longitude=37.6173\""
+    },
+    {
+      "name": "Get events nearby - missing latitude",
+      "curl": "curl -X GET \"http://localhost:8082/events/nearby?longitude=37.6173\""
+    },
+    {
+      "name": "Get events nearby - missing longitude",
+      "curl": "curl -X GET \"http://localhost:8082/events/nearby?latitude=55.7558\""
+    },
+    {
+      "name": "Get events nearby - invalid latitude",
+      "curl": "curl -X GET \"http://localhost:8082/events/nearby?latitude=invalid&longitude=37.6173\""
+    },
+    {
+      "name": "Get events nearby - invalid longitude",
+      "curl": "curl -X GET \"http://localhost:8082/events/nearby?latitude=55.7558&longitude=invalid\""
+    },
+    {
+      "name": "Get events nearby - with radius",
+      "curl": "curl -X GET \"http://localhost:8082/events/nearby?latitude=55.7558&longitude=37.6173&radius=20\""
+    },
+    {
+      "name": "Get events nearby - with limit",
+      "curl": "curl -X GET \"http://localhost:8082/events/nearby?latitude=55.7558&longitude=37.6173&limit=5\""
+    },
+    {
+      "name": "Get events nearby - negative radius",
+      "curl": "curl -X GET \"http://localhost:8082/events/nearby?latitude=55.7558&longitude=37.6173&radius=-5\""
+    },
+    {
+      "name": "Get events nearby - negative limit",
+      "curl": "curl -X GET \"http://localhost:8082/events/nearby?latitude=55.7558&longitude=37.6173&limit=-5\""
+    },
+    {
+      "name": "Get upcoming events - default",
+      "curl": "curl -X GET http://localhost:8082/events/upcoming"
+    },
+    {
+      "name": "Get upcoming events - with limit",
+      "curl": "curl -X GET \"http://localhost:8082/events/upcoming?limit=5\""
+    },
+    {
+      "name": "Get upcoming events - negative limit",
+      "curl": "curl -X GET \"http://localhost:8082/events/upcoming?limit=-5\""
+    },
+    {
+      "name": "Register for event - no auth",
+      "curl": "curl -X POST http://localhost:8082/events/1/register"
+    },
+    {
+      "name": "Register for event - valid request",
+      "curl": "curl -X POST http://localhost:8082/events/1/register -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Register for event - invalid event ID",
+      "curl": "curl -X POST http://localhost:8082/events/abc/register -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Register for event - non-existent event",
+      "curl": "curl -X POST http://localhost:8082/events/999999/register -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Unregister from event - no auth",
+      "curl": "curl -X DELETE http://localhost:8082/events/1/unregister"
+    },
+    {
+      "name": "Unregister from event - valid request",
+      "curl": "curl -X DELETE http://localhost:8082/events/1/unregister -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Unregister from event - invalid event ID",
+      "curl": "curl -X DELETE http://localhost:8082/events/abc/unregister -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Get event attendees - valid event",
+      "curl": "curl -X GET http://localhost:8082/events/1/attendees"
+    },
+    {
+      "name": "Get event attendees - invalid ID",
+      "curl": "curl -X GET http://localhost:8082/events/abc/attendees"
+    },
+    {
+      "name": "Get user events - no auth",
+      "curl": "curl -X GET http://localhost:8082/events/user"
+    },
+    {
+      "name": "Get user events - valid request",
+      "curl": "curl -X GET http://localhost:8082/events/user -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Get user events - with limit",
+      "curl": "curl -X GET \"http://localhost:8082/events/user?limit=5\" -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Update event - no auth",
+      "curl": "curl -X PUT http://localhost:8082/events/1 -H \"Content-Type: application/json\" -d '{\"title\":\"Updated Title\"}'"
+    },
+    {
+      "name": "Update event - valid request",
+      "curl": "curl -X PUT http://localhost:8082/events/1 -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"title\":\"Updated Title\"}'"
+    },
+    {
+      "name": "Update event - invalid event ID",
+      "curl": "curl -X PUT http://localhost:8082/events/abc -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"title\":\"Updated\"}'"
+    },
+    {
+      "name": "Update event - empty JSON",
+      "curl": "curl -X PUT http://localhost:8082/events/1 -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{}'"
+    },
+    {
+      "name": "Delete event - no auth",
+      "curl": "curl -X DELETE http://localhost:8082/events/1"
+    },
+    {
+      "name": "Delete event - valid request",
+      "curl": "curl -X DELETE http://localhost:8082/events/1 -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Delete event - invalid ID",
+      "curl": "curl -X DELETE http://localhost:8082/events/abc -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Health check",
+      "curl": "curl -X GET http://localhost:8082/health"
+    },
+    {
+      "name": "Root endpoint",
+      "curl": "curl -X GET http://localhost:8082/"
+    },
+    {
+      "name": "Invalid endpoint",
+      "curl": "curl -X GET http://localhost:8082/invalid"
+    },
+    {
+      "name": "Wrong method - POST on get events",
+      "curl": "curl -X POST http://localhost:8082/events"
+    },
+    {
+      "name": "Wrong method - PATCH on events list",
+      "curl": "curl -X PATCH http://localhost:8082/events"
+    },
+    {
+      "name": "Non-JSON content type",
+      "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: text/plain\" -d 'title=Test'"
+    },
+    {
+      "name": "Empty body",
+      "curl": "curl -X POST http://localhost:8082/events"
+    },
+    {
+      "name": "Very long title",
+      "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: application/json\" -d '{\"title\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"event_date\":\"2026-12-31T23:59:59Z\",\"latitude\":55.7558,\"longitude\":37.6173}'"
+    },
+    {
+      "name": "Unicode in title",
+      "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: application/json\" -d '{\"title\":\"Тестовое событие\",\"event_date\":\"2026-12-31T23:59:59Z\",\"latitude\":55.7558,\"longitude\":37.6173}'"
+    },
+    {
+      "name": "XSS in description",
+      "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: application/json\" -d '{\"title\":\"Test\",\"description\":\"<script>alert(1)</script>\",\"event_date\":\"2026-12-31T23:59:59Z\",\"latitude\":55.7558,\"longitude\":37.6173}'"
+    },
+    {
+      "name": "SQL injection in title",
+      "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: application/json\" -d '{\"title\":\"Test'\"'\"' OR '1'='1\",\"event_date\":\"2026-12-31T23:59:59Z\",\"latitude\":55.7558,\"longitude\":37.6173}'"
+    },
+    {
+      "name": "Boolean as string in is_free",
+      "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: application/json\" -d '{\"title\":\"Test\",\"event_date\":\"2026-12-31T23:59:59Z\",\"latitude\":55.7558,\"longitude\":37.6173,\"is_free\":\"true\"}'"
+    },
+    {
+      "name": "Null in required field",
+      "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: application/json\" -d '{\"title\":null,\"event_date\":\"2026-12-31T23:59:59Z\",\"latitude\":55.7558,\"longitude\":37.6173}'"
+    },
+    {
+      "name": "Array in title",
+      "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: application/json\" -d '{\"title\":[\"Test Event\"],\"event_date\":\"2026-12-31T23:59:59Z\",\"latitude\":55.7558,\"longitude\":37.6173}'"
+    },
+    {
+      "name": "Zero latitude",
+      "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: application/json\" -d '{\"title\":\"Test\",\"event_date\":\"2026-12-31T23:59:59Z\",\"latitude\":0,\"longitude\":0}'"
+    },
+    {
+      "name": "Zero longitude",
+      "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: application/json\" -d '{\"title\":\"Test\",\"event_date\":\"2026-12-31T23:59:59Z\",\"latitude\":55.7558,\"longitude\":0}'"
+    },
+    {
+      "name": "Very large price",
+      "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: application/json\" -d '{\"title\":\"Test\",\"event_date\":\"2026-12-31T23:59:59Z\",\"latitude\":55.7558,\"longitude\":37.6173,\"is_free\":false,\"price\":999999999999}'"
+    },
+    {
+      "name": "Float in max_attendees",
+      "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: application/json\" -d '{\"title\":\"Test\",\"event_date\":\"2026-12-31T23:59:59Z\",\"latitude\":55.7558,\"longitude\":37.6173,\"max_attendees\":10.5}'"
+    },
+    {
+      "name": "Negative max_attendees",
+      "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: application/json\" -d '{\"title\":\"Test\",\"event_date\":\"2026-12-31T23:59:59Z\",\"latitude\":55.7558,\"longitude\":37.6173,\"max_attendees\":-5}'"
+    }
+  ],
+  "message_service_tests": [
+    {
+      "name": "Send message - no auth",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -d '{\"group_id\":1,\"content\":\"Hello World\"}'"
+    },
+    {
+      "name": "Send message - valid request",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"group_id\":1,\"content\":\"Hello World\"}'"
+    },
+    {
+      "name": "Send message - missing group_id",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"content\":\"Hello World\"}'"
+    },
+    {
+      "name": "Send message - missing content",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"group_id\":1}'"
+    },
+    {
+      "name": "Send message - empty JSON",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{}'"
+    },
+    {
+      "name": "Send message - invalid JSON",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"group_id:\"invalid\"}'"
+    },
+    {
+      "name": "Send message - invalid group_id (string)",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"group_id\":\"abc\",\"content\":\"Hello\"}'"
+    },
+    {
+      "name": "Send message - zero group_id",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"group_id\":0,\"content\":\"Hello\"}'"
+    },
+    {
+      "name": "Send message - negative group_id",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"group_id\":-1,\"content\":\"Hello\"}'"
+    },
+    {
+      "name": "Send message - empty content",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"group_id\":1,\"content\":\"\"}'"
+    },
+    {
+      "name": "Send message - whitespace only content",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"group_id\":1,\"content\":\"   \"}'"
+    },
+    {
+      "name": "Get messages by group - valid request",
+      "curl": "curl -X GET http://localhost:8083/messages/group/1"
+    },
+    {
+      "name": "Get messages by group - invalid group ID (string)",
+      "curl": "curl -X GET http://localhost:8083/messages/group/abc"
+    },
+    {
+      "name": "Get messages by group - zero group ID",
+      "curl": "curl -X GET http://localhost:8083/messages/group/0"
+    },
+    {
+      "name": "Get messages by group - negative group ID",
+      "curl": "curl -X GET http://localhost:8083/messages/group/-1"
+    },
+    {
+      "name": "Get messages by group - with limit",
+      "curl": "curl -X GET \"http://localhost:8083/messages/group/1?limit=10\""
+    },
+    {
+      "name": "Get messages by group - zero limit",
+      "curl": "curl -X GET \"http://localhost:8083/messages/group/1?limit=0\""
+    },
+    {
+      "name": "Get messages by group - negative limit",
+      "curl": "curl -X GET \"http://localhost:8083/messages/group/1?limit=-5\""
+    },
+    {
+      "name": "Get messages by group - invalid limit (string)",
+      "curl": "curl -X GET \"http://localhost:8083/messages/group/1?limit=abc\""
+    },
+    {
+      "name": "Health check",
+      "curl": "curl -X GET http://localhost:8083/health"
+    },
+    {
+      "name": "Root endpoint",
+      "curl": "curl -X GET http://localhost:8083/"
+    },
+    {
+      "name": "Invalid endpoint",
+      "curl": "curl -X GET http://localhost:8083/invalid"
+    },
+    {
+      "name": "Wrong method - GET on send message",
+      "curl": "curl -X GET http://localhost:8083/messages"
+    },
+    {
+      "name": "Wrong method - DELETE on get messages",
+      "curl": "curl -X DELETE http://localhost:8083/messages/group/1"
+    },
+    {
+      "name": "Non-JSON content type",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: text/plain\" -d 'group_id=1&content=Hello'"
+    },
+    {
+      "name": "Empty body",
+      "curl": "curl -X POST http://localhost:8083/messages"
+    },
+    {
+      "name": "Very long content",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"group_id\":1,\"content\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}'"
+    },
+    {
+      "name": "Unicode content",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"group_id\":1,\"content\":\"Привет мир! Hello World! 🌍\"}'"
+    },
+    {
+      "name": "XSS in content",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"group_id\":1,\"content\":\"<script>alert(1)</script>\"}'"
+    },
+    {
+      "name": "SQL injection in content",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"group_id\":1,\"content\":\"SELECT * FROM users\"}'"
+    },
+    {
+      "name": "Boolean as string in group_id",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"group_id\":\"true\",\"content\":\"Hello\"}'"
+    },
+    {
+      "name": "Null in content",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"group_id\":1,\"content\":null}'"
+    },
+    {
+      "name": "Array in content",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"group_id\":1,\"content\":[\"Hello\"]}'"
+    },
+    {
+      "name": "Object in content",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"group_id\":1,\"content\":{\"text\":\"Hello\"}}'"
+    },
+    {
+      "name": "Very large group_id",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"group_id\":999999999999999999,\"content\":\"Hello\"}'"
+    },
+    {
+      "name": "Multiple messages in quick succession",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"group_id\":1,\"content\":\"Message 1\"}' && curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"group_id\":1,\"content\":\"Message 2\"}'"
+    },
+    {
+      "name": "HTML tags in content",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"group_id\":1,\"content\":\"<b>Bold</b> and <i>Italic</i>\"}'"
+    },
+    {
+      "name": "Newlines in content",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"group_id\":1,\"content\":\"Line 1\\nLine 2\\nLine 3\"}'"
+    },
+    {
+      "name": "Tabs in content",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"group_id\":1,\"content\":\"Tab\\there\"}'"
+    },
+    {
+      "name": "Emoji in content",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"group_id\":1,\"content\":\"Hello 👋😊\"}'"
+    },
+    {
+      "name": "URL in content",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"group_id\":1,\"content\":\"Check https://example.com\"}'"
+    },
+    {
+      "name": "Email in content",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"group_id\":1,\"content\":\"Contact test@example.com\"}'"
+    },
+    {
+      "name": "JSON-like content",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"group_id\":1,\"content\":\"{\\\"key\\\":\\\"value\\\"}\"}'"
+    },
+    {
+      "name": "Float in group_id",
+      "curl": "curl -X POST http://localhost:8083/messages -H \"Content-Type: application/json\" -H \"Authorization: Bearer VALID_TOKEN\" -d '{\"group_id\":1.5,\"content\":\"Hello\"}'"
+    }
+  ]
+}

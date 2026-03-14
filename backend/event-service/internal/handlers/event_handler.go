@@ -42,7 +42,8 @@ func (h *EventHandler) CreateEvent(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
-		"event": event,
+		"message": "event created successfully",
+		"event":   event,
 	})
 }
 

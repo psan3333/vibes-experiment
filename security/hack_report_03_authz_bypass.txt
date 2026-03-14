@@ -1,0 +1,40 @@
+AUTHORIZATION BYPASS HACK REPORT
+============================================================
+
+Total vulnerabilities found: 5
+
+Finding #1
+type: IDOR - Friend Request Manipulation
+endpoint: http://localhost:8081/friends/request/1/accept
+description: Can manipulate friend requests without ownership
+response: 400
+------------------------------------------------------------
+
+Finding #2
+type: IDOR - Friend Request Manipulation
+endpoint: http://localhost:8081/friends/request/1/reject
+description: Can manipulate friend requests without ownership
+response: 400
+------------------------------------------------------------
+
+Finding #3
+type: IDOR - Friend Request Manipulation
+endpoint: http://localhost:8081/friends/request/999/accept
+description: Can manipulate friend requests without ownership
+response: 400
+------------------------------------------------------------
+
+Finding #4
+type: IDOR - Friend Request Manipulation
+endpoint: http://localhost:8081/friends/request/999/reject
+description: Can manipulate friend requests without ownership
+response: 400
+------------------------------------------------------------
+
+Finding #5
+type: Profile Update
+endpoint: http://localhost:8081/profile
+description: User 21 can modify their own profile (expected behavior)
+response: 200
+------------------------------------------------------------
+

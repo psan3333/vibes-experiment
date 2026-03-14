@@ -1,0 +1,5 @@
+SQL INJECTION HACK REPORT
+============================================================
+
+Total vulnerabilities found: 0
+
