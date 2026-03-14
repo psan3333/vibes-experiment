@@ -1,0 +1,23 @@
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /swagger/*any             --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (4 handlers)
+[GIN-debug] POST   /register                 --> github.com/meetup/backend/user-service/internal/handlers.(*UserHandler).Register-fm (4 handlers)
+[GIN-debug] POST   /login                    --> github.com/meetup/backend/user-service/internal/handlers.(*UserHandler).Login-fm (4 handlers)
+[GIN-debug] GET    /profile                  --> github.com/meetup/backend/user-service/internal/handlers.(*UserHandler).GetProfile-fm (5 handlers)
+[GIN-debug] PUT    /profile                  --> github.com/meetup/backend/user-service/internal/handlers.(*UserHandler).UpdateProfile-fm (5 handlers)
+[GIN-debug] PUT    /profile/avatar           --> github.com/meetup/backend/user-service/internal/handlers.(*UserHandler).UpdateAvatar-fm (5 handlers)
+[GIN-debug] GET    /users/search             --> github.com/meetup/backend/user-service/internal/handlers.(*UserHandler).SearchUsers-fm (5 handlers)
+[GIN-debug] GET    /users/suggestions        --> github.com/meetup/backend/user-service/internal/handlers.(*UserHandler).GetFriendSuggestions-fm (5 handlers)
+[GIN-debug] POST   /friends/request          --> github.com/meetup/backend/user-service/internal/handlers.(*UserHandler).SendFriendRequest-fm (5 handlers)
+[GIN-debug] PUT    /friends/request/:id/accept --> github.com/meetup/backend/user-service/internal/handlers.(*UserHandler).AcceptFriendRequest-fm (5 handlers)
+[GIN-debug] PUT    /friends/request/:id/reject --> github.com/meetup/backend/user-service/internal/handlers.(*UserHandler).RejectFriendRequest-fm (5 handlers)
+[GIN-debug] GET    /friends                  --> github.com/meetup/backend/user-service/internal/handlers.(*UserHandler).GetFriends-fm (5 handlers)
+[GIN-debug] DELETE /friends/:id              --> github.com/meetup/backend/user-service/internal/handlers.(*UserHandler).RemoveFriend-fm (5 handlers)
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://github.com/gin-gonic/gin/blob/master/docs/doc.md#dont-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :8081
+[GIN-debug] [ERROR] listen tcp :8081: bind: address already in use

@@ -1,0 +1,21 @@
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /swagger/*any             --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (4 handlers)
+[GIN-debug] POST   /events                   --> github.com/meetup/backend/event-service/internal/handlers.(*EventHandler).CreateEvent-fm (4 handlers)
+[GIN-debug] GET    /events/:id               --> github.com/meetup/backend/event-service/internal/handlers.(*EventHandler).GetEvent-fm (4 handlers)
+[GIN-debug] PUT    /events/:id               --> github.com/meetup/backend/event-service/internal/handlers.(*EventHandler).UpdateEvent-fm (4 handlers)
+[GIN-debug] DELETE /events/:id               --> github.com/meetup/backend/event-service/internal/handlers.(*EventHandler).DeleteEvent-fm (4 handlers)
+[GIN-debug] GET    /events/nearby            --> github.com/meetup/backend/event-service/internal/handlers.(*EventHandler).GetEventsByLocation-fm (4 handlers)
+[GIN-debug] GET    /events/upcoming          --> github.com/meetup/backend/event-service/internal/handlers.(*EventHandler).GetUpcomingEvents-fm (4 handlers)
+[GIN-debug] POST   /events/:id/register      --> github.com/meetup/backend/event-service/internal/handlers.(*EventHandler).RegisterForEvent-fm (5 handlers)
+[GIN-debug] DELETE /events/:id/unregister    --> github.com/meetup/backend/event-service/internal/handlers.(*EventHandler).UnregisterFromEvent-fm (5 handlers)
+[GIN-debug] GET    /events/:id/attendees     --> github.com/meetup/backend/event-service/internal/handlers.(*EventHandler).GetEventAttendees-fm (5 handlers)
+[GIN-debug] GET    /events/user              --> github.com/meetup/backend/event-service/internal/handlers.(*EventHandler).GetUserEvents-fm (5 handlers)
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://github.com/gin-gonic/gin/blob/master/docs/doc.md#dont-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :8082
+[GIN-debug] [ERROR] listen tcp :8082: bind: address already in use

@@ -1,0 +1,383 @@
+basePath: /
+definitions:
+  models.Event:
+    properties:
+      address:
+        type: string
+      category:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      event_date:
+        type: string
+      id:
+        type: integer
+      is_free:
+        type: boolean
+      latitude:
+        type: number
+      longitude:
+        type: number
+      max_attendees:
+        type: integer
+      organizer:
+        $ref: '#/definitions/models.User'
+      organizer_id:
+        type: integer
+      price:
+        type: number
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.EventAttendee:
+    properties:
+      created_at:
+        type: string
+      event:
+        $ref: '#/definitions/models.Event'
+      event_id:
+        type: integer
+      id:
+        type: integer
+      status:
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+      user_id:
+        type: integer
+    type: object
+  models.User:
+    properties:
+      age:
+        type: integer
+      avatar_url:
+        type: string
+      bio:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: integer
+      is_organizer:
+        type: boolean
+      last_name:
+        type: string
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+  services.CreateEventInput:
+    properties:
+      address:
+        type: string
+      category:
+        type: string
+      description:
+        type: string
+      event_date:
+        description: ISO 8601 format
+        type: string
+      is_free:
+        default: true
+        type: boolean
+      latitude:
+        type: number
+      longitude:
+        type: number
+      max_attendees:
+        type: integer
+      price:
+        type: number
+      title:
+        type: string
+    required:
+    - event_date
+    - latitude
+    - longitude
+    - title
+    type: object
+  services.UpdateEventInput:
+    properties:
+      address:
+        type: string
+      category:
+        type: string
+      description:
+        type: string
+      event_date:
+        description: ISO 8601 format
+        type: string
+      is_free:
+        type: boolean
+      latitude:
+        type: number
+      longitude:
+        type: number
+      max_attendees:
+        type: integer
+      price:
+        type: number
+      title:
+        type: string
+    type: object
+host: localhost:8082
+info:
+  contact:
+    email: support@example.com
+    name: API Support
+    url: http://www.example.com/support
+  description: API for Event service in Meetup social networking application
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Event Service API
+  version: "1.0"
+paths:
+  /events:
+    post:
+      consumes:
+      - application/json
+      description: Create a new event with title, description, date, location and
+        other details
+      parameters:
+      - description: Event data
+        in: body
+        name: event
+        required: true
+        schema:
+          $ref: '#/definitions/services.CreateEventInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create new event
+      tags:
+      - Events
+  /events/{id}:
+    delete:
+      description: Delete an event by its ID
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete event
+      tags:
+      - Events
+    get:
+      description: Get an event by its ID
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Event'
+      summary: Get event by ID
+      tags:
+      - Events
+    put:
+      consumes:
+      - application/json
+      description: Update an event by its ID
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Event data
+        in: body
+        name: event
+        required: true
+        schema:
+          $ref: '#/definitions/services.UpdateEventInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Event'
+      summary: Update event
+      tags:
+      - Events
+  /events/{id}/attendees:
+    get:
+      description: Get all attendees for a specific event
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.EventAttendee'
+            type: array
+      summary: Get event attendees
+      tags:
+      - Events
+  /events/{id}/register:
+    post:
+      consumes:
+      - application/json
+      description: Register the current user for an event
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Register for event
+      tags:
+      - Events
+  /events/{id}/unregister:
+    delete:
+      consumes:
+      - application/json
+      description: Unregister the current user from an event
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Unregister from event
+      tags:
+      - Events
+  /events/nearby:
+    get:
+      description: Get events near a specific latitude and longitude
+      parameters:
+      - description: Latitude
+        format: float64
+        in: query
+        name: latitude
+        required: true
+        type: number
+      - description: Longitude
+        format: float64
+        in: query
+        name: longitude
+        required: true
+        type: number
+      - description: Radius in kilometers (default 10)
+        format: float64
+        in: query
+        name: radius
+        type: number
+      - description: Results limit (default 20)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Event'
+            type: array
+      summary: Get events by location
+      tags:
+      - Events
+  /events/upcoming:
+    get:
+      description: Get upcoming events ordered by date
+      parameters:
+      - description: Results limit (default 10)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Event'
+            type: array
+      summary: Get upcoming events
+      tags:
+      - Events
+  /events/user:
+    get:
+      description: Get all events the current user is attending or organizing
+      parameters:
+      - description: Results limit (default 10)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Event'
+            type: array
+      summary: Get user events
+      tags:
+      - Events
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
