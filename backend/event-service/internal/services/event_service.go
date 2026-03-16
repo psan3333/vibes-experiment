@@ -42,7 +42,7 @@ type UpdateEventInput struct {
 	MaxAttendees *int     `json:"max_attendees"`
 }
 
-func (s *EventService) CreateEvent(input CreateEventInput) (*models.Event, error) {
+func (s *EventService) CreateEvent(userID uint, input CreateEventInput) (*models.Event, error) {
 	if input.Latitude < -90 || input.Latitude > 90 {
 		return nil, errors.New("latitude must be between -90 and 90")
 	}
@@ -84,7 +84,7 @@ func (s *EventService) CreateEvent(input CreateEventInput) (*models.Event, error
 		Price:        input.Price,
 		Category:     input.Category,
 		MaxAttendees: input.MaxAttendees,
-		OrganizerID:  1, // TODO: Get from auth context
+		OrganizerID:  userID,
 	}
 
 	if err := s.eventRepo.Create(event); err != nil {
@@ -237,11 +237,18 @@ func (s *EventService) RegisterForEvent(userID uint, eventID uint) error {
 		}
 	}
 
-	// Register for event
+	// Generate ticket ID
+	ticketID, err := models.GenerateTicketID()
+	if err != nil {
+		return errors.New("failed to generate ticket ID")
+	}
+
+	// Register for event with pending status
 	attendee := &models.EventAttendee{
-		UserID:  userID,
-		EventID: eventID,
-		Status:  "going",
+		UserID:   userID,
+		EventID:  eventID,
+		Status:   "pending",
+		TicketID: ticketID,
 	}
 
 	return s.eventRepo.CreateAttendee(attendee)
@@ -290,4 +297,79 @@ func (s *EventService) GetUserEvents(userID uint, limit int) ([]models.Event, er
 	}
 
 	return s.eventRepo.GetUserEvents(userID)
+}
+
+func (s *EventService) GetEvents(limit, offset int) ([]models.Event, error) {
+	// Validate limit
+	if limit < 0 {
+		limit = 20 // default
+	}
+	// Validate offset
+	if offset < 0 {
+		offset = 0
+	}
+	return s.eventRepo.GetEvents(limit, offset)
+}
+
+func (s *EventService) GetPendingAttendees(eventID uint, userID uint) ([]models.EventAttendee, error) {
+	// Check if the user is the organizer of the event
+	event, err := s.eventRepo.FindByID(eventID)
+	if err != nil {
+		return nil, errors.New("event not found")
+	}
+	if event.OrganizerID != userID {
+		return nil, errors.New("not authorized to view pending attendees")
+	}
+
+	return s.eventRepo.GetPendingAttendees(eventID)
+}
+
+func (s *EventService) AcceptAttendee(eventID uint, attendeeID uint, userID uint) error {
+	// Check if the user is the organizer of the event
+	event, err := s.eventRepo.FindByID(eventID)
+	if err != nil {
+		return errors.New("event not found")
+	}
+	if event.OrganizerID != userID {
+		return errors.New("not authorized to accept attendees")
+	}
+
+	return s.eventRepo.UpdateAttendeeStatus(attendeeID, "approved")
+}
+
+func (s *EventService) RejectAttendee(eventID uint, attendeeID uint, userID uint) error {
+	// Check if the user is the organizer of the event
+	event, err := s.eventRepo.FindByID(eventID)
+	if err != nil {
+		return errors.New("event not found")
+	}
+	if event.OrganizerID != userID {
+		return errors.New("not authorized to reject attendees")
+	}
+
+	return s.eventRepo.UpdateAttendeeStatus(attendeeID, "rejected")
+}
+
+func (s *EventService) CancelAttendance(eventID uint, userID uint) error {
+	return s.eventRepo.UpdateAttendeeStatusByEventAndUser(eventID, userID, "cancelled")
+}
+
+func (s *EventService) SearchEvents(query string, limit int) ([]models.Event, error) {
+	// Validate limit
+	if limit < 0 {
+		limit = 20 // default
+	}
+	return s.eventRepo.SearchEvents(query, limit)
+}
+
+func (s *EventService) GetOrganizedEvents(userID uint, limit, offset int) ([]models.Event, error) {
+	// Validate limit
+	if limit < 0 {
+		limit = 20 // default
+	}
+	// Validate offset
+	if offset < 0 {
+		offset = 0
+	}
+	return s.eventRepo.FindByOrganizerIDPaged(userID, limit, offset)
 }

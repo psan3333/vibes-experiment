@@ -79,7 +79,7 @@ check_all_services() {
     local all_running=0
     for service in "${services[@]}"; do
         local name="${service%%:*}"
-        local url="${service##*:}"
+        local url="${service#*:}"
         check_service "$name" "$url" || all_running=1
     done
     

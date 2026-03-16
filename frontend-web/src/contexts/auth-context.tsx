@@ -2,23 +2,27 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { jwtDecode } from 'jwt-decode';
-import { api } from '@/lib/api';
+import { api, User, RegisterInput, UpdateProfileInput } from '@/lib/api';
+
+interface JwtPayload {
+  exp: number;
+}
 
 interface AuthContextType {
-  user: any | null;
+  user: User | null;
   token: string | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (userData: any) => Promise<void>;
+  register: (userData: RegisterInput) => Promise<void>;
   logout: () => void;
-  updateProfile: (data: any) => Promise<any>;
-  updateAvatar: (avatarUrl: string) => Promise<any>;
+  updateProfile: (data: UpdateProfileInput) => Promise<User>;
+  updateAvatar: (avatarUrl: string) => Promise<User>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -26,16 +30,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const storedToken = localStorage.getItem('token');
     if (storedToken) {
       try {
-        const decoded: any = jwtDecode(storedToken);
+        const decoded = jwtDecode<JwtPayload & User>(storedToken);
         // Check if token is expired
         if (decoded.exp && decoded.exp * 1000 > Date.now()) {
+          // eslint-disable-next-line react-hooks/set-state-in-effect
           setToken(storedToken);
           setUser(decoded);
           api.setToken(storedToken);
         } else {
           localStorage.removeItem('token');
         }
-      } catch (error) {
+      } catch {
         localStorage.removeItem('token');
       }
     }
@@ -54,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const register = async (userData: any) => {
+  const register = async (userData: RegisterInput) => {
     try {
       const response = await api.register(userData);
       setToken(response.token);
@@ -73,7 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     api.setToken(null);
   };
 
-  const updateProfile = async (data: any) => {
+  const updateProfile = async (data: UpdateProfileInput) => {
     try {
       const response = await api.updateProfile(data);
       setUser(response);

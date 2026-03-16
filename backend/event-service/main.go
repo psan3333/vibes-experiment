@@ -45,6 +45,7 @@ func main() {
 	}
 
 	if err := db.AutoMigrate(
+		&models.User{},
 		&models.Event{},
 		&models.EventAttendee{},
 	); err != nil {
@@ -63,15 +64,15 @@ func main() {
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// Public routes
-	// @Summary Create new event
-	// @Description Create a new event with title, description, date, location and other details
+	// @Summary Get events
+	// @Description Get a list of events with pagination
 	// @Tags Events
-	// @Accept json
 	// @Produce json
-	// @Param event body services.CreateEventInput true "Event data"
-	// @Success 201 {object} map[string]interface{}
-	// @Router /events [post]
-	r.POST("/events", eventHandler.CreateEvent)
+	// @Param limit query int false "Results limit (default 20)"
+	// @Param offset query int false "Results offset (default 0)"
+	// @Success 200 {array} models.Event
+	// @Router /events [get]
+	r.GET("/events", eventHandler.GetEvents)
 
 	// @Summary Get event by ID
 	// @Description Get an event by its ID
@@ -126,6 +127,16 @@ func main() {
 	authorized := r.Group("/")
 	authorized.Use(middleware.AuthMiddleware(cfg.JWTSecret))
 	{
+		// @Summary Create new event
+		// @Description Create a new event with title, description, date, location and other details
+		// @Tags Events
+		// @Accept json
+		// @Produce json
+		// @Param event body services.CreateEventInput true "Event data"
+		// @Success 201 {object} map[string]interface{}
+		// @Router /events [post]
+		authorized.POST("/events", eventHandler.CreateEvent)
+
 		// @Summary Register for event
 		// @Description Register the current user for an event
 		// @Tags Events
@@ -163,6 +174,64 @@ func main() {
 		// @Success 200 {array} models.Event
 		// @Router /events/user [get]
 		authorized.GET("/events/user", eventHandler.GetUserEvents)
+
+		// @Summary Get pending attendees for an event
+		// @Description Get list of users who applied to attend an event (for event organizers)
+		// @Tags Events
+		// @Produce json
+		// @Param id path int true "Event ID"
+		// @Success 200 {array} models.EventAttendee
+		// @Router /events/{id}/pending [get]
+		authorized.GET("/events/:id/pending", eventHandler.GetPendingAttendees)
+
+		// @Summary Accept an attendee's application
+		// @Description Accept a user's application to attend an event
+		// @Tags Events
+		// @Produce json
+		// @Param id path int true "Event ID"
+		// @Param attendeeId path int true "Attendee ID"
+		// @Success 200 {object} map[string]string
+		// @Router /events/{id}/attendees/{attendeeId}/accept [put]
+		authorized.PUT("/events/:id/attendees/:attendeeId/accept", eventHandler.AcceptAttendee)
+
+		// @Summary Reject an attendee's application
+		// @Description Reject a user's application to attend an event
+		// @Tags Events
+		// @Produce json
+		// @Param id path int true "Event ID"
+		// @Param attendeeId path int true "Attendee ID"
+		// @Success 200 {object} map[string]string
+		// @Router /events/{id}/attendees/{attendeeId}/reject [put]
+		authorized.PUT("/events/:id/attendees/:attendeeId/reject", eventHandler.RejectAttendee)
+
+		// @Summary Cancel attendance for an event
+		// @Description Cancel user's attendance for an event
+		// @Tags Events
+		// @Produce json
+		// @Param id path int true "Event ID"
+		// @Success 200 {object} map[string]string
+		// @Router /events/{id}/cancel [delete]
+		authorized.DELETE("/events/:id/cancel", eventHandler.CancelAttendance)
+
+		// @Summary Search events by text query
+		// @Description Search events by title or description
+		// @Tags Events
+		// @Produce json
+		// @Param q query string true "Search query"
+		// @Param limit query int false "Results limit"
+		// @Success 200 {array} models.Event
+		// @Router /events/search [get]
+		authorized.GET("/events/search", eventHandler.SearchEvents)
+
+		// @Summary Get events organized by the current user
+		// @Description Get list of events organized by the current user (admin panel)
+		// @Tags Events
+		// @Produce json
+		// @Param limit query int false "Results limit"
+		// @Param offset query int false "Results offset"
+		// @Success 200 {array} models.Event
+		// @Router /events/organized [get]
+		authorized.GET("/events/organized", eventHandler.GetOrganizedEvents)
 	}
 
 	port := os.Getenv("PORT")

@@ -623,6 +623,50 @@
     {
       "name": "Negative max_attendees",
       "curl": "curl -X POST http://localhost:8082/events -H \"Content-Type: application/json\" -d '{\"title\":\"Test\",\"event_date\":\"2026-12-31T23:59:59Z\",\"latitude\":55.7558,\"longitude\":37.6173,\"max_attendees\":-5}'"
+    },
+    {
+      "name": "Search events - valid query",
+      "curl": "curl -X GET \"http://localhost:8082/events/search?q=Test\" -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Search events - empty query",
+      "curl": "curl -X GET \"http://localhost:8082/events/search?q=\" -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Search events - with limit",
+      "curl": "curl -X GET \"http://localhost:8082/events/search?q=Test&limit=5\" -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Get organized events - valid request",
+      "curl": "curl -X GET \"http://localhost:8082/events/organized\" -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Get organized events - with limit and offset",
+      "curl": "curl -X GET \"http://localhost:8082/events/organized?limit=10&offset=0\" -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Get pending attendees - valid request",
+      "curl": "curl -X GET \"http://localhost:8082/events/1/pending\" -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Get pending attendees - invalid event ID",
+      "curl": "curl -X GET \"http://localhost:8082/events/abc/pending\" -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Accept attendee - valid request",
+      "curl": "curl -X PUT \"http://localhost:8082/events/1/attendees/1/accept\" -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Accept attendee - invalid event ID",
+      "curl": "curl -X PUT \"http://localhost:8082/events/abc/attendees/1/accept\" -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Reject attendee - valid request",
+      "curl": "curl -X PUT \"http://localhost:8082/events/1/attendees/1/reject\" -H \"Authorization: Bearer VALID_TOKEN\""
+    },
+    {
+      "name": "Cancel attendance - valid request",
+      "curl": "curl -X DELETE \"http://localhost:8082/events/1/cancel\" -H \"Authorization: Bearer VALID_TOKEN\""
     }
   ],
   "message_service_tests": [

@@ -83,3 +83,38 @@ func (r *EventRepository) GetUserEvents(userID uint) ([]models.Event, error) {
 		Find(&events).Error
 	return events, err
 }
+
+func (r *EventRepository) GetEvents(limit, offset int) ([]models.Event, error) {
+	var events []models.Event
+	err := r.db.Limit(limit).Offset(offset).Find(&events).Error
+	return events, err
+}
+
+func (r *EventRepository) GetPendingAttendees(eventID uint) ([]models.EventAttendee, error) {
+	var attendees []models.EventAttendee
+	err := r.db.Where("event_id = ? AND status = ?", eventID, "pending").Find(&attendees).Error
+	return attendees, err
+}
+
+func (r *EventRepository) UpdateAttendeeStatusByEventAndUser(eventID uint, userID uint, status string) error {
+	return r.db.Model(&models.EventAttendee{}).
+		Where("event_id = ? AND user_id = ?", eventID, userID).
+		Update("status", status).Error
+}
+
+func (r *EventRepository) SearchEvents(query string, limit int) ([]models.Event, error) {
+	var events []models.Event
+	err := r.db.Where("title ILIKE ? OR description ILIKE ?", "%"+query+"%", "%"+query+"%").
+		Limit(limit).
+		Find(&events).Error
+	return events, err
+}
+
+func (r *EventRepository) FindByOrganizerIDPaged(organizerID uint, limit, offset int) ([]models.Event, error) {
+	var events []models.Event
+	err := r.db.Where("organizer_id = ?", organizerID).
+		Limit(limit).
+		Offset(offset).
+		Find(&events).Error
+	return events, err
+}

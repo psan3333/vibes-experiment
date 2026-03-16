@@ -36,7 +36,6 @@ type Event struct {
 	IsFree       bool           `gorm:"default:true" json:"is_free"`
 	Price        float64        `json:"price"`
 	OrganizerID  uint           `gorm:"not null" json:"organizer_id"`
-	Organizer    *User          `gorm:"foreignKey:OrganizerID" json:"organizer,omitempty"`
 	Category     string         `json:"category"`
 	MaxAttendees int            `json:"max_attendees"`
 }

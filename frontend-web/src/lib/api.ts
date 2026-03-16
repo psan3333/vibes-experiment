@@ -137,8 +137,8 @@ class ApiClient {
     });
   }
 
-  async searchEvents(query: string): Promise<Event[]> {
-    return this.request<Event[]>(`/events/search?q=${encodeURIComponent(query)}`);
+  async searchEvents(query: string, limit = 20): Promise<Event[]> {
+    return this.request<Event[]>(`/events/search?q=${encodeURIComponent(query)}&limit=${limit}`);
   }
 
   async getNearbyEvents(lat: number, lng: number, radius = 10): Promise<Event[]> {
@@ -147,6 +147,36 @@ class ApiClient {
 
   async getMyEvents(): Promise<Event[]> {
     return this.request<Event[]>('/events/user'); // Assuming we have this endpoint in event-service
+  }
+
+  async getUserEvents(): Promise<Event[]> {
+    return this.getMyEvents();
+  }
+
+  async getOrganizedEvents(limit = 20, offset = 0): Promise<Event[]> {
+    return this.request<Event[]>(`/events/organized?limit=${limit}&offset=${offset}`);
+  }
+
+  async getPendingAttendees(eventId: number): Promise<any[]> {
+    return this.request<any[]>(`/events/${eventId}/pending`);
+  }
+
+  async acceptAttendee(eventId: number, attendeeId: number): Promise<void> {
+    return this.request<void>(`/events/${eventId}/attendees/${attendeeId}/accept`, {
+      method: 'PUT',
+    });
+  }
+
+  async rejectAttendee(eventId: number, attendeeId: number): Promise<void> {
+    return this.request<void>(`/events/${eventId}/attendees/${attendeeId}/reject`, {
+      method: 'PUT',
+    });
+  }
+
+  async cancelAttendance(eventId: number): Promise<void> {
+    return this.request<void>(`/events/${eventId}/cancel`, {
+      method: 'DELETE',
+    });
   }
 
   async attendEvent(eventId: number): Promise<void> {
@@ -165,7 +195,7 @@ class ApiClient {
     return this.request<User[]>(`/events/${eventId}/attendees`);
   }
 
-  async getEventGroup(eventId: number): Promise<EventGroup> {
+  async getEventGroup(): Promise<EventGroup> {
     throw new Error('getEventGroup is not yet implemented - awaiting backend endpoint');
   }
 
@@ -215,6 +245,7 @@ export interface User {
   avatar_url: string;
   age: number;
   is_organizer: boolean;
+  created_at?: string;
 }
 
 export interface UpdateProfileInput {

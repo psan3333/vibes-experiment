@@ -65,29 +65,37 @@ func main() {
 
 	r.Use(middleware.CORS())
 
+	// Initialize rate limiter: 5 requests per minute per IP
+	rateLimiter := middleware.NewRateLimiter(5.0/60, 10)
+	go rateLimiter.CleanupOldVisitors()
+
 	// Swagger docs
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	// Public routes
-	// @Summary Register new user
-	// @Description Register a new user with email, username, password and profile information
-	// @Tags Authentication
-	// @Accept json
-	// @Produce json
-	// @Param user body services.RegisterInput true "User registration data"
-	// @Success 201 {object} map[string]interface{}
-	// @Router /register [post]
-	r.POST("/register", userHandler.Register)
+	// Public routes with rate limiting
+	public := r.Group("/")
+	public.Use(middleware.RateLimitMiddleware(rateLimiter))
+	{
+		// @Summary Register new user
+		// @Description Register a new user with email, username, password and profile information
+		// @Tags Authentication
+		// @Accept json
+		// @Produce json
+		// @Param user body services.RegisterInput true "User registration data"
+		// @Success 201 {object} map[string]interface{}
+		// @Router /register [post]
+		public.POST("/register", userHandler.Register)
 
-	// @Summary Login user
-	// @Description Login with email and password
-	// @Tags Authentication
-	// @Accept json
-	// @Produce json
-	// @Param credentials body services.LoginInput true "Login credentials"
-	// @Success 200 {object} map[string]interface{}
-	// @Router /login [post]
-	r.POST("/login", userHandler.Login)
+		// @Summary Login user
+		// @Description Login with email and password
+		// @Tags Authentication
+		// @Accept json
+		// @Produce json
+		// @Param credentials body services.LoginInput true "Login credentials"
+		// @Success 200 {object} map[string]interface{}
+		// @Router /login [post]
+		public.POST("/login", userHandler.Login)
+	}
 
 	// Protected routes
 	authorized := r.Group("/")

@@ -23,19 +23,20 @@ describe('Button Component', () => {
   it('renders outline variant', () => {
     render(<Button variant="outline">Outline</Button>);
     const button = screen.getByRole('button');
-    expect(button).toHaveClass('border');
+    expect(button).toHaveClass('border-2');
+    expect(button).toHaveClass('border-border');
   });
 
   it('renders small size', () => {
     render(<Button size="sm">Small</Button>);
     const button = screen.getByRole('button');
-    expect(button).toHaveClass('h-9');
+    expect(button).toHaveClass('h-8');
   });
 
   it('renders large size', () => {
     render(<Button size="lg">Large</Button>);
     const button = screen.getByRole('button');
-    expect(button).toHaveClass('h-11');
+    expect(button).toHaveClass('h-12');
   });
 
   it('can be disabled', () => {

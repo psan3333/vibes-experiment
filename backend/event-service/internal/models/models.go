@@ -1,10 +1,21 @@
 package models
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"time"
 
 	"gorm.io/gorm"
 )
+
+// GenerateTicketID generates a unique ticket ID for event attendees
+func GenerateTicketID() (string, error) {
+	bytes := make([]byte, 16) // 128 bits
+	if _, err := rand.Read(bytes); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(bytes), nil
+}
 
 type User struct {
 	ID           uint           `gorm:"primarykey" json:"id"`
@@ -36,7 +47,6 @@ type Event struct {
 	IsFree       bool           `gorm:"default:true" json:"is_free"`
 	Price        float64        `json:"price"`
 	OrganizerID  uint           `gorm:"not null" json:"organizer_id"`
-	Organizer    *User          `gorm:"foreignKey:OrganizerID" json:"organizer,omitempty"`
 	Category     string         `json:"category"`
 	MaxAttendees int            `json:"max_attendees"`
 }
@@ -46,9 +56,8 @@ type EventAttendee struct {
 	CreatedAt time.Time `json:"created_at"`
 	UserID    uint      `gorm:"not null;index" json:"user_id"`
 	EventID   uint      `gorm:"not null;index" json:"event_id"`
-	Status    string    `gorm:"default:'going'" json:"status"`
-	User      *User     `gorm:"foreignKey:UserID" json:"user,omitempty"`
-	Event     *Event    `gorm:"foreignKey:EventID" json:"event,omitempty"`
+	Status    string    `gorm:"default:'pending'" json:"status"` // pending, approved, rejected, cancelled
+	TicketID  string    `gorm:"uniqueIndex;not null" json:"ticket_id"`
 }
 
 type Message struct {

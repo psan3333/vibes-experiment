@@ -29,13 +29,14 @@ func NewEventHandler(eventService *services.EventService) *EventHandler {
 // @Success 201 {object} map[string]interface{}
 // @Router /events [post]
 func (h *EventHandler) CreateEvent(c *gin.Context) {
+	userID := c.GetUint("user_id")
 	var input services.CreateEventInput
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	event, err := h.eventService.CreateEvent(input)
+	event, err := h.eventService.CreateEvent(userID, input)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -304,6 +305,220 @@ func (h *EventHandler) GetUserEvents(c *gin.Context) {
 	}
 
 	events, err := h.eventService.GetUserEvents(userID, limit)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, events)
+}
+
+// GetEvents godoc
+// @Summary Get events
+// @Description Get a list of events with pagination
+// @Tags Events
+// @Produce json
+// @Param limit query int false "Results limit (default 20)"
+// @Param offset query int false "Results offset (default 0)"
+// @Success 200 {array} models.Event
+// @Router /events [get]
+func (h *EventHandler) GetEvents(c *gin.Context) {
+	limit := 20 // default limit
+	if l := c.Query("limit"); l != "" {
+		if parsed, err := strconv.Atoi(l); err == nil {
+			limit = parsed
+		}
+	}
+
+	offset := 0 // default offset
+	if o := c.Query("offset"); o != "" {
+		if parsed, err := strconv.Atoi(o); err == nil {
+			offset = parsed
+		}
+	}
+
+	events, err := h.eventService.GetEvents(limit, offset)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, events)
+}
+
+// GetPendingAttendees godoc
+// @Summary Get pending attendees for an event
+// @Description Get list of users who applied to attend an event (for event organizers)
+// @Tags Events
+// @Produce json
+// @Param id path int true "Event ID"
+// @Success 200 {array} models.EventAttendee
+// @Router /events/{id}/pending [get]
+func (h *EventHandler) GetPendingAttendees(c *gin.Context) {
+	userID := c.GetUint("user_id") // From auth middleware
+	eventID, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid event ID"})
+		return
+	}
+
+	attendees, err := h.eventService.GetPendingAttendees(uint(eventID), userID)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, attendees)
+}
+
+// AcceptAttendee godoc
+// @Summary Accept an attendee's application
+// @Description Accept a user's application to attend an event
+// @Tags Events
+// @Produce json
+// @Param id path int true "Event ID"
+// @Param attendeeId path int true "Attendee ID"
+// @Success 200 {object} map[string]string
+// @Router /events/{id}/attendees/{attendeeId}/accept [put]
+func (h *EventHandler) AcceptAttendee(c *gin.Context) {
+	userID := c.GetUint("user_id")
+	eventID, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid event ID"})
+		return
+	}
+
+	attendeeID, err := strconv.ParseUint(c.Param("attendeeId"), 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid attendee ID"})
+		return
+	}
+
+	err = h.eventService.AcceptAttendee(uint(eventID), uint(attendeeID), userID)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "attendee accepted"})
+}
+
+// RejectAttendee godoc
+// @Summary Reject an attendee's application
+// @Description Reject a user's application to attend an event
+// @Tags Events
+// @Produce json
+// @Param id path int true "Event ID"
+// @Param attendeeId path int true "Attendee ID"
+// @Success 200 {object} map[string]string
+// @Router /events/{id}/attendees/{attendeeId}/reject [put]
+func (h *EventHandler) RejectAttendee(c *gin.Context) {
+	userID := c.GetUint("user_id")
+	eventID, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid event ID"})
+		return
+	}
+
+	attendeeID, err := strconv.ParseUint(c.Param("attendeeId"), 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid attendee ID"})
+		return
+	}
+
+	err = h.eventService.RejectAttendee(uint(eventID), uint(attendeeID), userID)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "attendee rejected"})
+}
+
+// CancelAttendance godoc
+// @Summary Cancel attendance for an event
+// @Description Cancel user's attendance for an event
+// @Tags Events
+// @Produce json
+// @Param id path int true "Event ID"
+// @Success 200 {object} map[string]string
+// @Router /events/{id}/cancel [delete]
+func (h *EventHandler) CancelAttendance(c *gin.Context) {
+	userID := c.GetUint("user_id")
+	eventID, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid event ID"})
+		return
+	}
+
+	err = h.eventService.CancelAttendance(uint(eventID), userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "attendance cancelled"})
+}
+
+// SearchEvents godoc
+// @Summary Search events by text query
+// @Description Search events by title or description
+// @Tags Events
+// @Produce json
+// @Param q query string true "Search query"
+// @Param limit query int false "Results limit"
+// @Success 200 {array} models.Event
+// @Router /events/search [get]
+func (h *EventHandler) SearchEvents(c *gin.Context) {
+	query := c.Query("q")
+	if query == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "search query is required"})
+		return
+	}
+
+	limit := 20 // default limit
+	if l := c.Query("limit"); l != "" {
+		if parsed, err := strconv.Atoi(l); err == nil {
+			limit = parsed
+		}
+	}
+
+	events, err := h.eventService.SearchEvents(query, limit)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, events)
+}
+
+// GetOrganizedEvents godoc
+// @Summary Get events organized by the current user
+// @Description Get list of events organized by the current user (admin panel)
+// @Tags Events
+// @Produce json
+// @Param limit query int false "Results limit"
+// @Param offset query int false "Results offset"
+// @Success 200 {array} models.Event
+// @Router /events/organized [get]
+func (h *EventHandler) GetOrganizedEvents(c *gin.Context) {
+	userID := c.GetUint("user_id")
+
+	limit := 20 // default limit
+	if l := c.Query("limit"); l != "" {
+		if parsed, err := strconv.Atoi(l); err == nil {
+			limit = parsed
+		}
+	}
+
+	offset := 0 // default offset
+	if o := c.Query("offset"); o != "" {
+		if parsed, err := strconv.Atoi(o); err == nil {
+			offset = parsed
+		}
+	}
+
+	events, err := h.eventService.GetOrganizedEvents(userID, limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
