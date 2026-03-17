@@ -1,0 +1,38 @@
+# Frontend .dockerignore
+
+# Logs
+logs/
+*.log
+*.log.*
+**/*.log
+**/*.log.*
+
+# Node modules (will be installed in Docker)
+node_modules/
+.next/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Backend (don't include in frontend build)
+../backend/
+../infra/
+
+# TodoApp (excluded as requested)
+../TodoApp/

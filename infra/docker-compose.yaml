@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: socialconnect-postgres
+    environment:
+      POSTGRES_DB: socialconnect
+      POSTGRES_USER: socialconnect
+      POSTGRES_PASSWORD: socialconnect123
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U socialconnect"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - socialconnect-network
+
+  # Backend Services
+  backend:
+    build:
+      context: ../
+      dockerfile: infra/Dockerfile
+    container_name: socialconnect-backend
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+      - "8082:8082"
+      - "8083:8083"
+    environment:
+      - DATABASE_URL=postgres://socialconnect:socialconnect123@postgres:5432/socialconnect?sslmode=disable
+      - JWT_SECRET=your-super-secret-jwt-key-change-in-production
+      - PORT=8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - socialconnect-network
+
+  # Frontend
+  frontend:
+    build:
+      context: ../frontend-web
+      dockerfile: ../infra/Dockerfile.frontend
+    container_name: socialconnect-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8080
+      - NEXT_PUBLIC_YANDEX_MAPS_API_KEY=${YANDEX_MAPS_API_KEY:-}
+    depends_on:
+      - backend
+    networks:
+      - socialconnect-network
+
+volumes:
+  postgres_data:
+
+networks:
+  socialconnect-network:
+    driver: bridge
