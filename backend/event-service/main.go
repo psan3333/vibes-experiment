@@ -45,7 +45,6 @@ func main() {
 	}
 
 	if err := db.AutoMigrate(
-		&models.User{},
 		&models.Event{},
 		&models.EventAttendee{},
 	); err != nil {
