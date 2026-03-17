@@ -36,27 +36,37 @@ export const YandexMap: React.FC<YandexMapProps> = ({
   useEffect(() => {
     if (!isLoaded || !mapRef.current || map) return;
 
-    const newMap = new window.ymaps.Map(mapRef.current, {
-      center,
-      zoom,
-      controls: ['zoomControl', 'fullscreenControl'],
-    });
+    // Check if ymaps.Map is available
+    if (!window.ymaps || !window.ymaps.Map) {
+      console.error('Yandex Maps API not properly loaded');
+      return;
+    }
 
-    // Add click event listener
-    newMap.events.add('click', (e: any) => {
-      const coords = e.get('coords');
-      if (onMapClick) {
-        onMapClick(coords);
-      }
-    });
+    try {
+      const newMap = new window.ymaps.Map(mapRef.current, {
+        center,
+        zoom,
+        controls: ['zoomControl', 'fullscreenControl'],
+      });
 
-    setMap(newMap);
+      // Add click event listener
+      newMap.events.add('click', (e: any) => {
+        const coords = e.get('coords');
+        if (onMapClick) {
+          onMapClick(coords);
+        }
+      });
 
-    return () => {
-      if (newMap) {
-        newMap.destroy();
-      }
-    };
+      setMap(newMap);
+
+      return () => {
+        if (newMap) {
+          newMap.destroy();
+        }
+      };
+    } catch (error) {
+      console.error('Error creating Yandex Map:', error);
+    }
   }, [isLoaded, center, zoom]);
 
   // Update markers
@@ -97,5 +107,19 @@ export const YandexMap: React.FC<YandexMapProps> = ({
     }
   }, [map, center, zoom]);
 
-  return <div ref={mapRef} className={`w-full h-full ${className}`} />;
+  return (
+    <div className={`w-full h-full ${className} relative`}>
+      <div ref={mapRef} className="w-full h-full" />
+      {!isLoaded && (
+        <div className="absolute inset-0 flex items-center justify-center bg-muted">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      )}
+      {isLoaded && !map && (
+        <div className="absolute inset-0 flex items-center justify-center bg-muted">
+          <p className="text-muted-foreground">Loading map...</p>
+        </div>
+      )}
+    </div>
+  );
 };
