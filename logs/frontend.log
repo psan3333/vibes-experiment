@@ -2,22 +2,12 @@
 > frontend-web@0.1.0 dev
 > next dev
 
-⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
- We detected multiple lockfiles and selected the directory of /home/bobrcurva/package-lock.json as the root directory.
- To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
-   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
- Detected additional lockfiles: 
-   * /home/bobrcurva/Desktop/screen-rotation/frontend-web/package-lock.json
-
 ▲ Next.js 16.1.6 (Turbopack)
 - Local:         http://localhost:3000
 - Network:       http://192.168.1.191:3000
+- Environments: .env.local
 
 ✓ Starting...
-✓ Ready in 1756ms
- HEAD / 200 in 3.0s (compile: 2.8s, render: 226ms)
- GET / 200 in 62ms (compile: 13ms, render: 49ms)
- HEAD /messages 200 in 893ms (compile: 827ms, render: 66ms)
- GET /messages 200 in 56ms (compile: 7ms, render: 49ms)
- GET /messages 200 in 60ms (compile: 3ms, render: 57ms)
+✓ Ready in 1811ms
+ GET / 200 in 451ms (compile: 340ms, render: 111ms)
 [?25h

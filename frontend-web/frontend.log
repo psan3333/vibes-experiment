@@ -9,3 +9,9 @@
 
 ✓ Starting...
 ✓ Ready in 1994ms
+ GET / 200 in 1280ms (compile: 1156ms, render: 124ms)
+ GET /discover 200 in 156ms (compile: 92ms, render: 64ms)
+ GET /discover 200 in 39ms (compile: 5ms, render: 34ms)
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+✓ Compiled in 605ms
+ GET /discover 200 in 289ms (compile: 81ms, render: 208ms)

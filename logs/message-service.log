@@ -10,4 +10,4 @@
 [GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
 Please check https://github.com/gin-gonic/gin/blob/master/docs/doc.md#dont-trust-all-proxies for details.
 [GIN-debug] Listening and serving HTTP on :8083
-[GIN-debug] [ERROR] listen tcp :8083: bind: address already in use
+[GIN] 2026/03/17 - 13:15:11 | 404 |  2.724µs |       127.0.0.1 | GET      "/"

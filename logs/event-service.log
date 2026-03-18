@@ -5,21 +5,24 @@
  - using code:	gin.SetMode(gin.ReleaseMode)
 
 [GIN-debug] GET    /swagger/*any             --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (4 handlers)
-[GIN-debug] POST   /events                   --> github.com/meetup/backend/event-service/internal/handlers.(*EventHandler).CreateEvent-fm (4 handlers)
 [GIN-debug] GET    /events                   --> github.com/meetup/backend/event-service/internal/handlers.(*EventHandler).GetEvents-fm (4 handlers)
 [GIN-debug] GET    /events/:id               --> github.com/meetup/backend/event-service/internal/handlers.(*EventHandler).GetEvent-fm (4 handlers)
 [GIN-debug] PUT    /events/:id               --> github.com/meetup/backend/event-service/internal/handlers.(*EventHandler).UpdateEvent-fm (4 handlers)
 [GIN-debug] DELETE /events/:id               --> github.com/meetup/backend/event-service/internal/handlers.(*EventHandler).DeleteEvent-fm (4 handlers)
 [GIN-debug] GET    /events/nearby            --> github.com/meetup/backend/event-service/internal/handlers.(*EventHandler).GetEventsByLocation-fm (4 handlers)
 [GIN-debug] GET    /events/upcoming          --> github.com/meetup/backend/event-service/internal/handlers.(*EventHandler).GetUpcomingEvents-fm (4 handlers)
+[GIN-debug] POST   /events                   --> github.com/meetup/backend/event-service/internal/handlers.(*EventHandler).CreateEvent-fm (5 handlers)
 [GIN-debug] POST   /events/:id/register      --> github.com/meetup/backend/event-service/internal/handlers.(*EventHandler).RegisterForEvent-fm (5 handlers)
 [GIN-debug] DELETE /events/:id/unregister    --> github.com/meetup/backend/event-service/internal/handlers.(*EventHandler).UnregisterFromEvent-fm (5 handlers)
 [GIN-debug] GET    /events/:id/attendees     --> github.com/meetup/backend/event-service/internal/handlers.(*EventHandler).GetEventAttendees-fm (5 handlers)
 [GIN-debug] GET    /events/user              --> github.com/meetup/backend/event-service/internal/handlers.(*EventHandler).GetUserEvents-fm (5 handlers)
+[GIN-debug] GET    /events/:id/pending       --> github.com/meetup/backend/event-service/internal/handlers.(*EventHandler).GetPendingAttendees-fm (5 handlers)
+[GIN-debug] PUT    /events/:id/attendees/:attendeeId/accept --> github.com/meetup/backend/event-service/internal/handlers.(*EventHandler).AcceptAttendee-fm (5 handlers)
+[GIN-debug] PUT    /events/:id/attendees/:attendeeId/reject --> github.com/meetup/backend/event-service/internal/handlers.(*EventHandler).RejectAttendee-fm (5 handlers)
+[GIN-debug] DELETE /events/:id/cancel        --> github.com/meetup/backend/event-service/internal/handlers.(*EventHandler).CancelAttendance-fm (5 handlers)
+[GIN-debug] GET    /events/search            --> github.com/meetup/backend/event-service/internal/handlers.(*EventHandler).SearchEvents-fm (5 handlers)
+[GIN-debug] GET    /events/organized         --> github.com/meetup/backend/event-service/internal/handlers.(*EventHandler).GetOrganizedEvents-fm (5 handlers)
 [GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
 Please check https://github.com/gin-gonic/gin/blob/master/docs/doc.md#dont-trust-all-proxies for details.
 [GIN-debug] Listening and serving HTTP on :8082
-[GIN] 2026/03/15 - 12:50:04 | 201 |  26.16ms |       127.0.0.1 | POST     "/events"
-[GIN] 2026/03/15 - 12:50:10 | 201 |   6.96ms |       127.0.0.1 | POST     "/events"
-[GIN] 2026/03/15 - 12:50:16 | 201 |   4.64ms |       127.0.0.1 | POST     "/events"
-[GIN] 2026/03/15 - 12:50:31 | 200 |   4.55ms |       127.0.0.1 | DELETE   "/events/12"
+[GIN] 2026/03/17 - 13:15:11 | 404 |  2.515µs |       127.0.0.1 | GET      "/"
